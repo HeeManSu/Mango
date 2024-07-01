@@ -8,11 +8,29 @@ datasource db {
 }
 
 model Organization {
-  organization_id Int        @id @default(autoincrement())
-  name            String
-  customers       Customer[]
+  organization_id      Int                   @id @default(autoincrement())
+  name                 String
+  customers            Customer[]
+  organization_peoples Organization_People[]
 
   @@map("organizations")
+}
+
+model Organization_People {
+  team_member_id Int    @id @default(autoincrement())
+  email          String @unique
+  name           String
+  role           Role   @default(member)
+
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [organization_id])
+
+  Issue Issue[]
+}
+
+enum Role {
+  admin
+  member
 }
 
 model Customer {
@@ -41,7 +59,10 @@ model Issue {
   deleted_at  DateTime?
 
   customerId Int
-  customer Customer @relation(fields: [customerId], references: [customer_id])
+  customer   Customer @relation(fields: [customerId], references: [customer_id])
+
+  team_memberId Int
+  team_member   Organization_People @relation(fields: [team_memberId], references: [team_member_id])
 
   @@map("issues")
 }
