@@ -26,6 +26,8 @@ model Organization_People {
   organization   Organization @relation(fields: [organizationId], references: [organization_id])
 
   Issue Issue[]
+
+  @@map("organization_people")
 }
 
 enum Role {
