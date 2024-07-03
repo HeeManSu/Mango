@@ -13,6 +13,8 @@ model Organization {
   customers            Customer[]
   organization_peoples Organization_People[]
 
+  Issue Issue[]
+
   @@map("organizations")
 }
 
@@ -65,6 +67,9 @@ model Issue {
 
   team_memberId Int
   team_member   Organization_People @relation(fields: [team_memberId], references: [team_member_id])
+
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [organization_id])
 
   @@map("issues")
 }
