@@ -1,12 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { catchAsyncError } from "../middlewares/catchAsyncError";
 import ErrorHandlerClass from "../utils/errorClass";
+import prisma from "../config/primsa-client";
 
 export const createIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Your issue creation logic here
+        const organization_id = await prisma.$queryRaw`SELECT organization_id FROM organizations`
+        console.log("organization_id: ", organization_id);
+
+
     } catch (error) {
-        next(new ErrorHandlerClass("Unable to create issue", 400)); // Adjust error handling as necessary
+        console.error(error)
     }
 });
 
