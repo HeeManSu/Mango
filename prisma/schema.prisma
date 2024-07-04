@@ -38,11 +38,10 @@ enum Role {
 }
 
 model Customer {
-  customer_id Int     @id @default(autoincrement())
-  first_name  String
-  last_name   String?
-  phone       Int?    @unique
-  email       String  @unique
+  customer_id Int    @id @default(autoincrement())
+  name        String
+  phone       Int?   @unique
+  email       String @unique
 
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [organization_id])
