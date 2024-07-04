@@ -1,5 +1,6 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../config/primsa-client";
-
+import { IssueCreateData } from "../interfaces/issueInterface";
 
 class IssueRepository {
     async findOrganization() {
@@ -24,15 +25,13 @@ class IssueRepository {
         });
     }
 
-
-    async createIssue(data: any) {
+    async createIssue(data: IssueCreateData) {
         return prisma.issue.create({ data });
     }
 
-    async transaction(callback: (trx: any) => Promise<any>) {
+    async transaction(callback: (trx: Prisma.TransactionClient) => Promise<any>) {
         return prisma.$transaction(callback);
     }
 }
-
 
 export default new IssueRepository();
