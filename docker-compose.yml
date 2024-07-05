@@ -3,7 +3,7 @@ services:
   mango-server:
     build: .
     ports:
-      - "8081:8081"
+      - "8082:8082"
     environment:
       - DATABASE_URL=postgresql://root:password@db:5432/mango?schema=public
     volumes:

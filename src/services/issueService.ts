@@ -1,10 +1,10 @@
 import { IssueBodyData } from "../interfaces/issueInterface";
 import issueRepository from "../repositories/issueRepository";
 import ErrorHandlerClass from "../utils/errorClass";
-import { Prisma } from "@prisma/client";
+import { Issue, Prisma } from "@prisma/client";
 
 class IssueService {
-    async createIssue(issueData: IssueBodyData) {
+    async createIssue(issueData: IssueBodyData): Promise<Issue> {
         const { title, description, state, priority, customerName, teamMemberName } = issueData;
 
         const organization = await issueRepository.findOrganization();
@@ -51,6 +51,32 @@ class IssueService {
             return issue;
         });
         return newIssue;
+    }
+
+    async getAllIssues(): Promise<Issue[]> {
+        const organization = await issueRepository.findOrganization();
+
+        if (!organization) {
+            throw new ErrorHandlerClass("Organization Not found", 404);
+        }
+
+        return await issueRepository.getAllIssues();
+    }
+
+    async updateIssue(issue_id: number, issueData: Partial<IssueBodyData>) {
+        const updateIssue = await issueRepository.updateIssue(issue_id, issueData);
+
+        if (!updateIssue) {
+            throw new ErrorHandlerClass("Issue Not Found", 404);
+        }
+
+        return updateIssue;
+    }
+
+    async deleteIssue(issue_id: number): Promise<Issue> {
+        const deleteIssue = await issueRepository.deleteIssue(issue_id);
+
+        return deleteIssue;
     }
 }
 

@@ -1,13 +1,13 @@
-import { Prisma } from "@prisma/client";
+import { Customer, Issue, Organization, Organization_People, Prisma } from "@prisma/client";
 import prisma from "../config/primsa-client";
-import { IssueCreateData } from "../interfaces/issueInterface";
+import { IssueBodyData, IssueCreateData } from "../interfaces/issueInterface";
 
 class IssueRepository {
-    async findOrganization() {
+    async findOrganization(): Promise<Organization | null> {
         return prisma.organization.findFirst();
     }
 
-    async findCustomerByName(customerName: string) {
+    async findCustomerByName(customerName: string): Promise<Customer | null> {
         return prisma.customer.findFirst({
             where: {
                 OR: [
@@ -17,7 +17,7 @@ class IssueRepository {
         });
     }
 
-    async findTeamMemberByName(teamMemberName: string) {
+    async findTeamMemberByName(teamMemberName: string): Promise<Organization_People | null> {
         return prisma.organization_People.findFirst({
             where: {
                 name: { contains: teamMemberName, mode: 'insensitive' }
@@ -25,11 +25,42 @@ class IssueRepository {
         });
     }
 
-    async createIssue(data: IssueCreateData) {
+    async isIssuePresent(issue_id: number): Promise<boolean> {
+        const issue = await prisma.issue.findUnique({
+            where: { issue_id }
+        });
+
+        return issue !== null;
+    }
+
+    async createIssue(data: IssueCreateData): Promise<Issue> {
         return prisma.issue.create({ data });
     }
 
-    async transaction(callback: (trx: Prisma.TransactionClient) => Promise<any>) {
+    async getAllIssues(): Promise<Issue[]> {
+        return prisma.issue.findMany({
+            include: {
+                customer: true,
+                team_member: true,
+                organization: true,
+            },
+        });
+    }
+
+    async updateIssue(issue_id: number, data: Partial<IssueCreateData>) {
+        return prisma.issue.update({
+            where: { issue_id },
+            data,
+        });
+    }
+
+    async deleteIssue(issue_id: number): Promise<Issue> {
+        return prisma.issue.delete({
+            where: { issue_id }
+        });
+    }
+
+    async transaction(callback: (trx: Prisma.TransactionClient) => Promise<any>): Promise<any> {
         return prisma.$transaction(callback);
     }
 }

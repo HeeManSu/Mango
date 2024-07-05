@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { catchAsyncError } from "../middlewares/catchAsyncError";
 import ErrorHandlerClass from "../utils/errorClass";
-import prisma from "../config/primsa-client";
 import issueService from "../services/issueService";
+import prisma from "../config/primsa-client";
+import issueRepository from "../repositories/issueRepository";
 
-export const createIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-
-    // const { title, description, state, priority, customerName, team_memberName } = req.body;
+export const createIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const newIssue = await issueService.createIssue(req.body);
@@ -18,14 +17,62 @@ export const createIssue = catchAsyncError(async (req: Request, res: Response, n
         });
 
     } catch (error) {
-        // next(new ErrorHandlerClass("Unable to create issue", 400));
-        console.error(error);
+        next(new ErrorHandlerClass("Unable to create issue", 500));
     }
 });
 
+export const getAllIssues = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const allIssues = await issueService.getAllIssues();
 
-
-export const sendMessage = catchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-    res.send("Unable to send message or issue")
+        res.status(201).json({
+            success: true,
+            messages: "All issues fetched",
+            issue: allIssues
+        });
+    } catch (error) {
+        next(new ErrorHandlerClass("Failed to fetch issues", 500))
+    }
 });
 
+export const updateIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { issue_id } = req.params;
+
+        const updatedIssue = await issueService.updateIssue(Number(issue_id), req.body);
+
+        res.status(200).json({
+            success: true,
+            message: "Issue updated successfully",
+            issue: updatedIssue,
+        });
+
+    } catch (error) {
+        next(new ErrorHandlerClass("unable to update the issue", 500))
+    }
+
+});
+
+
+export const deleteIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { issue_id } = req.params;
+
+        const isExists = await issueRepository.isIssuePresent(Number(issue_id));
+
+        if (!isExists) {
+            console.log("Requested issue is not present");
+        }
+
+        await issueService.deleteIssue(Number(issue_id));
+
+        res.status(200).json({
+            success: true,
+            message: "Issue deleted successfully",
+        });
+
+    } catch (error) {
+        next(new ErrorHandlerClass("unable to update the issue", 500))
+    }
+
+})
