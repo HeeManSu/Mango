@@ -61,7 +61,7 @@ export const deleteIssue = catchAsyncError(async (req: Request, res: Response, n
         const isExists = await issueRepository.isIssuePresent(Number(issue_id));
 
         if (!isExists) {
-            console.log("Requested issue is not present");
+            throw new ErrorHandlerClass("Issue not found", 404)
         }
 
         await issueService.deleteIssue(Number(issue_id));
@@ -72,7 +72,6 @@ export const deleteIssue = catchAsyncError(async (req: Request, res: Response, n
         });
 
     } catch (error) {
-        next(new ErrorHandlerClass("unable to update the issue", 500))
+        next(new ErrorHandlerClass("Unable to delete the issue", 500));
     }
-
-})
+});
