@@ -48,4 +48,4 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: postgresql://root:password@localhost:5432/mango
-        uses: npm test
+        run: npm test
