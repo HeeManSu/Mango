@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { catchAsyncError } from "../middlewares/catchAsyncError";
 import ErrorHandlerClass from "../utils/errorClass";
 import issueService from "../services/issueService";
-import prisma from "../config/primsa-client";
 import issueRepository from "../repositories/issueRepository";
 
-export const createIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createIssue = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const newIssue = await issueService.createIssue(req.body);
@@ -19,9 +17,9 @@ export const createIssue = catchAsyncError(async (req: Request, res: Response, n
     } catch (error) {
         next(new ErrorHandlerClass("Unable to create issue", 500));
     }
-});
+};
 
-export const getAllIssues = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getAllIssues = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const allIssues = await issueService.getAllIssues();
 
@@ -33,9 +31,9 @@ export const getAllIssues = catchAsyncError(async (req: Request, res: Response, 
     } catch (error) {
         next(new ErrorHandlerClass("Failed to fetch issues", 500))
     }
-});
+};
 
-export const updateIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateIssue = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { issue_id } = req.params;
 
@@ -51,17 +49,15 @@ export const updateIssue = catchAsyncError(async (req: Request, res: Response, n
         next(new ErrorHandlerClass("unable to update the issue", 500))
     }
 
-});
+};
 
-
-export const deleteIssue = catchAsyncError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteIssue = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { issue_id } = req.params;
 
         const isExists = await issueRepository.isIssuePresent(Number(issue_id));
-
         if (!isExists) {
-            throw new ErrorHandlerClass("Issue not found", 404)
+            next(new ErrorHandlerClass("Requested issue not found", 404));
         }
 
         await issueService.deleteIssue(Number(issue_id));
@@ -74,4 +70,4 @@ export const deleteIssue = catchAsyncError(async (req: Request, res: Response, n
     } catch (error) {
         next(new ErrorHandlerClass("Unable to delete the issue", 500));
     }
-});
+};

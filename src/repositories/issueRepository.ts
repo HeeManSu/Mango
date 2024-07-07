@@ -1,6 +1,6 @@
 import { Customer, Issue, Organization, Organization_People, Prisma } from "@prisma/client";
 import prisma from "../config/primsa-client";
-import { IssueBodyData, IssueCreateData } from "../interfaces/issueInterface";
+import { IssueCreateData } from "../interfaces/issueInterface";
 
 class IssueRepository {
     async findOrganization(): Promise<Organization | null> {
@@ -55,7 +55,7 @@ class IssueRepository {
     }
 
     async deleteIssue(issue_id: number): Promise<Issue> {
-        return prisma.issue.delete({
+        return await prisma.issue.delete({
             where: { issue_id }
         });
     }

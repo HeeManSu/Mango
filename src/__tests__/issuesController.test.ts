@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { createIssue, deleteIssue, getAllIssues, updateIssue } from "../controllers/issuesController";
 import issueService from "../services/issueService";
 import issueRepository from "../repositories/issueRepository";
+import ErrorHandlerClass from "../utils/errorClass";
 
 jest.mock('../services/issueService');
 jest.mock('../repositories/issueRepository');
@@ -146,7 +147,7 @@ describe('Issue Controller', () => {
         });
     });
     describe('deleteIssue', () => {
-        it.only('should delete an issue and return 200 status', async () => {
+        it('should delete an issue and return 200 status', async () => {
             const req = {
                 params: { issue_id: '1' },
             } as unknown as Request;
@@ -169,28 +170,6 @@ describe('Issue Controller', () => {
                 message: 'Issue deleted successfully',
             });
         });
-        it('should return 404 if the issue does not exist', async () => {
-            const req = {
-                params: { issue_id: '1' },
-            } as unknown as Request;
-
-            const res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            } as unknown as Response;
-
-            const next = jest.fn() as NextFunction;
-
-            (issueRepository.isIssuePresent as jest.Mock).mockResolvedValue(false);
-
-            await deleteIssue(req, res, next);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({
-                success: false,
-                message: 'Issue not found',
-            });
-        });
 
         it('should call next with an error if issue deletion fails', async () => {
             const req = {
@@ -204,12 +183,31 @@ describe('Issue Controller', () => {
 
             const next = jest.fn() as NextFunction;
 
-            (issueRepository.isIssuePresent as jest.Mock).mockResolvedValue(false);
+            (issueRepository.isIssuePresent as jest.Mock).mockResolvedValue(true);
             (issueService.deleteIssue as jest.Mock).mockRejectedValue(new Error('Unable to delete issue'));
 
             await deleteIssue(req, res, next);
 
             expect(next).toHaveBeenCalledWith(expect.any(Error));
         });
+
+        it('should log a message if the issue does not exist', async () => {
+            const req = {
+                params: { issue_id: '1' },
+            } as unknown as Request;
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            } as unknown as Response;
+
+            const next = jest.fn() as NextFunction;
+
+            (issueRepository.isIssuePresent as jest.Mock).mockResolvedValue(false);
+
+            await deleteIssue(req as Request, res as Response, next as NextFunction);
+
+            expect(next).toHaveBeenCalledWith(new ErrorHandlerClass('Requested issue not found', 404));
+        });
     });
-})
+});
