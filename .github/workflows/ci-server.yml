@@ -9,7 +9,28 @@ on:
       - master
 
 jobs:
-  build-and-test:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run prisma:generate
+
+      - name: Migrate database
+        run: npx prisma migrate deploy
+
+  test:
     runs-on: ubuntu-latest
 
     services:
@@ -27,6 +48,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    needs: build
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -38,12 +61,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Generate Prisma Client
-        run: npm run primsa:generate
-
-      - name: Migrate database
-        run: npx prisma migrate deploy
 
       - name: Run tests
         env:
