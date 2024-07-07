@@ -29,7 +29,7 @@ jobs:
 
       - name: Migrate database
         env:
-          DATABASE_URL: postgresql://root:password@localhost:5432/mango
+          DATABASE_URL: postgresql://root:password@db:5432/mango
         run: npx prisma migrate deploy
 
   test:
