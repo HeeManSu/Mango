@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - "mango-frontend/**"
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - "mango-frontend/**"
 
 jobs:
   build-and-test:
