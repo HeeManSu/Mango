@@ -72,7 +72,7 @@ model Issue {
   organization   Organization @relation(fields: [organizationId], references: [organization_id])
 
   sprintId Int?
-  Sprint   Sprint? @relation(fields: [sprintId], references: [sprint_id])
+  sprint   Sprint? @relation(fields: [sprintId], references: [sprint_id])
 
   @@map("issues")
 }
