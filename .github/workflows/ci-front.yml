@@ -1,0 +1,42 @@
+name: Frontend CI pipeline
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "mango-frontend/**"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "mango-frontend/**"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: mango-frontend
+
+      - name: Lint code
+        run: npm run lint
+        working-directory: mango-frontend
+
+      - name: Build project
+        run: npm run build
+        working-directory: mango-frontend
+
+      - name: Run tests
+        run: npm test
+        working-directory: mango-frontend
