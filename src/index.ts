@@ -13,8 +13,10 @@ app.get("/", async (req: Request, res: Response) => {
 });
 
 import issueRoutes from './routes/issues';
+import sprintRoutes from './routes/sprints';
 
 app.use('/api/v1', issueRoutes);
+app.use('/api/v1', sprintRoutes)
 app.use(errorHandlerMiddleware);
 
 

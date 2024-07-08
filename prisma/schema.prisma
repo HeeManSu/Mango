@@ -13,7 +13,8 @@ model Organization {
   customers            Customer[]
   organization_peoples Organization_People[]
 
-  Issue Issue[]
+  Issue   Issue[]
+  Sprints Sprint[]
 
   @@map("organizations")
 }
@@ -70,6 +71,9 @@ model Issue {
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [organization_id])
 
+  sprintId Int?
+  Sprint   Sprint? @relation(fields: [sprintId], references: [sprint_id])
+
   @@map("issues")
 }
 
@@ -84,4 +88,25 @@ enum Priority {
   high
   low
   medium
+}
+
+model Sprint {
+  sprint_id      Int          @id @default(autoincrement())
+  name           String
+  description    String?
+  start_date     DateTime
+  end_date       DateTime
+  status         SprintStatus
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [organization_id])
+
+  issue Issue[]
+
+  @@map("sprints")
+}
+
+enum SprintStatus {
+  ongoing
+  upcoming
+  completed
 }
