@@ -41,11 +41,15 @@ class SprintService {
     }
 
     async updateSprint(sprint_id: number, sprintData: Partial<SprintBodyInput>): Promise<Sprint> {
-        const updatedSprint = await sprintRepository.updateSprint(sprint_id, sprintData);
+        const updatedSprint = await sprintRepository.transaction(async (trx: Prisma.TransactionClient) => {
+            const sprint = await sprintRepository.updateSprint(sprint_id, sprintData, trx);
 
-        if (!updatedSprint) {
-            throw new ErrorHandlerClass("Sprint Not Found", 404);
-        }
+            if (!sprint) {
+                throw new ErrorHandlerClass("Sprint Not Found", 404);
+            }
+
+            return sprint;
+        });
 
         return updatedSprint;
     }

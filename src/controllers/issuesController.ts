@@ -2,11 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import ErrorHandlerClass from "../utils/errorClass";
 import issueService from "../services/issueService";
 import issueRepository from "../repositories/issueRepository";
+import { IssueBodyData } from "../interfaces/issueInterface";
 
 export const createIssue = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
-        const newIssue = await issueService.createIssue(req.body);
+
+        const requestBody: IssueBodyData = req.body;
+        const newIssue = await issueService.createIssue(requestBody);
 
         res.status(201).json({
             success: true,
@@ -36,8 +39,9 @@ export const getAllIssues = async (req: Request, res: Response, next: NextFuncti
 export const updateIssue = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { issue_id } = req.params;
+        const updateData: Partial<IssueBodyData> = req.body;
 
-        const updatedIssue = await issueService.updateIssue(Number(issue_id), req.body);
+        const updatedIssue = await issueService.updateIssue(Number(issue_id), updateData);
 
         res.status(200).json({
             success: true,

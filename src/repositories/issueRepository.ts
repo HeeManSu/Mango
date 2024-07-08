@@ -43,14 +43,24 @@ class IssueRepository {
                 customer: true,
                 team_member: true,
                 organization: true,
+                sprint: true
             },
         });
     }
 
-    async updateIssue(issue_id: number, data: Partial<IssueCreateData>) {
-        return prisma.issue.update({
+    async updateIssue(issue_id: number, data: Partial<IssueCreateData>, trx?: Prisma.TransactionClient) {
+
+        const client = trx || prisma;
+
+        return await client.issue.update({
             where: { issue_id },
             data,
+            include: {
+                customer: true,
+                team_member: true,
+                organization: true,
+                sprint: true
+            }
         });
     }
 

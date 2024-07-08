@@ -5,7 +5,7 @@ import { Issue, Prisma } from "@prisma/client";
 
 class IssueService {
     async createIssue(issueData: IssueBodyData): Promise<Issue> {
-        const { title, description, state, priority, customerName, teamMemberName } = issueData;
+        const { title, description, state, priority, customerName, teamMemberName, sprintName } = issueData;
 
         const organization = await issueRepository.findOrganization();
 
@@ -32,6 +32,20 @@ class IssueService {
                 throw new ErrorHandlerClass('Team member not found', 404);
             }
 
+            let sprint = null;
+            if (sprintName) {
+                sprint = await trx.sprint.findFirst({
+                    where: {
+                        name: {
+                            contains: sprintName as string, mode: 'insensitive'
+                        }
+                    }
+                })
+                if (!sprint) {
+                    throw new ErrorHandlerClass('Sprint Not found', 404)
+                }
+            }
+
             const issue = await trx.issue.create({
                 data: {
                     title,
@@ -41,11 +55,13 @@ class IssueService {
                     customer: { connect: { customer_id: customer.customer_id } },
                     team_member: { connect: { team_member_id: teamMember.team_member_id } },
                     organization: { connect: { organization_id: organization.organization_id } },
+                    ...(sprint && { sprint: { connect: { sprint_id: sprint.sprint_id } } })
                 },
                 include: {
                     customer: true,
                     team_member: true,
-                    organization: true
+                    organization: true,
+                    sprint: true
                 },
             });
             return issue;
@@ -63,8 +79,36 @@ class IssueService {
         return await issueRepository.getAllIssues();
     }
 
-    async updateIssue(issue_id: number, issueData: Partial<IssueBodyData>) {
-        const updateIssue = await issueRepository.updateIssue(issue_id, issueData);
+    async updateIssue(issue_id: number, issueData: Partial<IssueBodyData>): Promise<Issue> {
+
+        const { sprintName, ...rest } = issueData;
+
+        const updateIssue = await issueRepository.transaction(async (trx: Prisma.TransactionClient) => {
+            let sprint = null;
+            if (sprintName) {
+                sprint = await trx.sprint.findFirst({
+                    where: {
+                        name: {
+                            contains: sprintName, mode: 'insensitive'
+                        }
+                    }
+                })
+                if (!sprint) {
+                    throw new ErrorHandlerClass('Sprint not found', 404);
+                }
+            }
+
+            const issue = await issueRepository.updateIssue(issue_id, {
+                ...rest,
+                ...(sprint && { sprint: { connect: { sprint_id: sprint.sprint_id } } })
+            }, trx)
+
+            return issue;
+        })
+
+
+
+
 
         if (!updateIssue) {
             throw new ErrorHandlerClass("Issue Not Found", 404);

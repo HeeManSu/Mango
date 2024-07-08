@@ -5,6 +5,7 @@ export interface IssueBodyData {
     priority: 'high' | 'medium' | 'low';
     customerName: string;
     teamMemberName: string;
+    sprintName?: string;
 }
 
 export interface IssueCreateData {
@@ -15,4 +16,5 @@ export interface IssueCreateData {
     customer: { connect: { customer_id: number } };
     team_member: { connect: { team_member_id: number } };
     organization: { connect: { organization_id: number } };
+    sprint?: { connect: { sprint_id: number } };
 }
