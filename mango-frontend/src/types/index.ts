@@ -1,11 +1,13 @@
-import { LucideIcon } from 'lucide-react';
-import { ReactNode } from 'react';
+import { Sprint } from "@prisma/client";
 
-export interface SidebarItems {
-  links: Array<{
-    label: string;
-    href: string;
-    icon?: LucideIcon;
-  }>;
-  extras?: ReactNode;
+export interface FetchSprintsPayload {
+  sprints: Sprint[];
+  message: string;
+}
+
+export interface SprintState {
+  sprints: Sprint[];
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
+  message: string | null;
 }
