@@ -1,10 +1,12 @@
 import express, { Request, Response } from 'express';
 import errorHandlerMiddleware from './middlewares/errorHandler';
+import cors from 'cors';
 
 const app = express();
 
 const port = 8082;
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
