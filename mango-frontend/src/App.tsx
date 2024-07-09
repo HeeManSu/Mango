@@ -1,4 +1,3 @@
-import { Toaster } from 'react-hot-toast';
 import './App.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import Drawer from './components/Drawer';
@@ -20,7 +19,7 @@ function App() {
           {/* <Drawer /> */}
           {/* <Button /> */}
         </Routes>
-        <Toaster />
+
       </Router>
     </>
 
