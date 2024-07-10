@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import sprintSlice from './slices/sprintSlice';
+import issueSlice from './slices/issueSlice';
 
 export const store = configureStore({
     reducer: {
-        sprints: sprintSlice
+        sprints: sprintSlice,
+        issues: issueSlice
     }
 })
 

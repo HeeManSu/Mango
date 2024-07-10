@@ -23,6 +23,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { clearError, clearMessage, fetchSprints } from "@/redux/slices/sprintSlice";
+import { Issue } from "@/types";
+import { createIssue } from "@/redux/slices/issueSlice";
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
 
 interface CreateIssueProps {
     isOpen: boolean;
@@ -33,10 +37,16 @@ interface CustomDropdownProps {
     label: string;
     items: { value: string; label: string }[];
     defaultValue: string;
+    onChange: (value: string) => void;
 }
 
-const CustomDropdown: React.FC<CustomDropdownProps> = ({ label, items, defaultValue }) => {
+const CustomDropdown: React.FC<CustomDropdownProps> = ({ label, items, defaultValue, onChange }) => {
     const [position, setPosition] = React.useState(defaultValue);
+
+    const handleChange = (value: string) => {
+        setPosition(value);
+        onChange(value);
+    }
 
     return (
         <DropdownMenu>
@@ -46,7 +56,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ label, items, defaultVa
             <DropdownMenuContent className="w-56">
                 <DropdownMenuLabel>{label}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
+                <DropdownMenuRadioGroup value={position} onValueChange={handleChange}>
                     {items.map((item) => (
                         <DropdownMenuRadioItem key={item.value} value={item.value}>
                             {item.label}
@@ -58,32 +68,32 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ label, items, defaultVa
     );
 };
 
-const StateDropdown: React.FC = () => (
-    <CustomDropdown
-        label="State"
-        items={[
-            { value: "todo", label: "Todo" },
-            { value: "backlog", label: "Backlog" },
-            { value: "progress", label: "Progress" },
-            { value: "completed", label: "Completed" },
-        ]}
-        defaultValue="bottom"
-    />
+const StateDropdown: React.FC<{ onChange: (value: string) => void }> = ({ onChange }) => (<CustomDropdown
+    label="State"
+    items={[
+        { value: "todo", label: "Todo" },
+        { value: "backlog", label: "Backlog" },
+        { value: "progress", label: "Progress" },
+        { value: "completed", label: "Completed" },
+    ]}
+    defaultValue="bottom"
+    onChange={onChange}
+/>
 );
 
-const PriorityDropdown: React.FC = () => (
-    <CustomDropdown
-        label="Priority"
-        items={[
-            { value: "low", label: "Low" },
-            { value: "medium", label: "Medium" },
-            { value: "high", label: "High" },
-        ]}
-        defaultValue="bottom"
-    />
+const PriorityDropdown: React.FC<{ onChange: (value: string) => void }> = ({ onChange }) => (<CustomDropdown
+    label="Priority"
+    items={[
+        { value: "low", label: "Low" },
+        { value: "medium", label: "Medium" },
+        { value: "high", label: "High" },
+    ]}
+    defaultValue="bottom"
+    onChange={onChange}
+/>
 );
 
-const AssigneesDropdown: React.FC = () => (
+const AssigneesDropdown: React.FC<{ onChange: (value: string) => void }> = ({ onChange }) => (
     <CustomDropdown
         label="Assignee"
         items={[
@@ -92,10 +102,11 @@ const AssigneesDropdown: React.FC = () => (
             { value: "Kinshu Sharma", label: "Kinshu Sharma" },
         ]}
         defaultValue="bottom"
+        onChange={onChange}
     />
 );
 
-const SprintsDropdown: React.FC = () => {
+const SprintsDropdown: React.FC<{ onChange: (value: string) => void }> = ({ onChange }) => {
     const { sprints } = useSelector((state: RootState) => state.sprints);
     const sprintItems = sprints.map((sprint) => ({ value: sprint.name, label: sprint.name }));
 
@@ -103,29 +114,91 @@ const SprintsDropdown: React.FC = () => {
         <CustomDropdown
             label="Sprints"
             items={sprintItems}
-            defaultValue="bottom"
+            defaultValue={sprintItems.length > 0 ? sprintItems[0].value : ''}
+            onChange={onChange}
         />
     );
 };
 
 export function CreateIssue({ isOpen, onClose }: CreateIssueProps) {
     const dispatch = useDispatch<AppDispatch>();
-    const { status, error, message } = useSelector((state: RootState) => state.sprints);
+    const { toast } = useToast();
+
+    const { status: sprintsStatus, error: sprintsError, message: sprintsMessage } = useSelector((state: RootState) => state.sprints);
+    const { status: issueStatus, error: issuesError, message: issuesMessage } = useSelector((state: RootState) => state.issues);
+
+    const [title, setTitle] = React.useState<string>('');
+    const [description, setDescription] = React.useState<string>('');
+    const [state, setState] = React.useState<string>('todo');
+    const [priority, setPriority] = React.useState<string>('low');
+    const [assignee, setAssignee] = React.useState<string>('Himanshu Sharma');
+    const [sprint, setSprint] = React.useState<string>('');
+
 
     React.useEffect(() => {
-        if (isOpen && status === 'idle') {
-            dispatch(fetchSprints());
+        if (isOpen && sprintsStatus === 'idle') {
+            const fetchSprintsAsync = async () => {
+                await dispatch(fetchSprints());
+            };
+
+            fetchSprintsAsync();
         }
-    }, [isOpen, status, dispatch]);
+    }, [isOpen, sprintsStatus, dispatch]);
 
     React.useEffect(() => {
-        if (message) {
+        if (sprintsMessage || issuesMessage) {
             dispatch(clearMessage());
         }
-        if (error) {
+        if (sprintsError || issuesError) {
             dispatch(clearError());
         }
-    }, [message, error, dispatch]);
+    }, [sprintsMessage, issuesMessage, sprintsError, issuesError, dispatch]);
+
+
+    React.useEffect(() => {
+        if (!isOpen) {
+            setTitle('');
+            setDescription('');
+            setState('todo');
+            setPriority('low');
+            setAssignee('Himanshu Sharma');
+            setSprint('');
+        }
+    }, [isOpen]);
+
+    const handleSubmit = async () => {
+        const issue: Issue = {
+            title,
+            description,
+            state: state as 'todo' | 'backlog' | 'completed',
+            priority: priority as 'low' | 'medium' | 'high',
+            customerName: "Jane Smith",
+            teamMemberName: assignee,
+            sprintName: sprint,
+        };
+
+        const resultAction = await dispatch(createIssue(issue));
+
+        if (createIssue.fulfilled.match(resultAction)) {
+            try {
+                toast({
+                    title: "Issue Created",
+                    description: "A new issue has been successfully created.",
+                });
+            } catch (error) {
+                console.log(error)
+            }
+            onClose();
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "There was an error creating the issue.",
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+            });
+        }
+    }
+
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -136,17 +209,17 @@ export function CreateIssue({ isOpen, onClose }: CreateIssueProps) {
                 <DialogDescription />
                 <div className="flex items-center space-x-2">
                     <div className="grid flex-1 gap-2">
-                        <Input type="text" placeholder="Title" />
+                        <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                     </div>
                 </div>
                 <div>
-                    <Textarea placeholder="Click to add description" />
+                    <Textarea placeholder="Click to add description" value={description} onChange={(e) => setDescription(e.target.value)} />
                 </div>
                 <div className="flex gap-5 justify-around">
-                    <StateDropdown />
-                    <PriorityDropdown />
-                    <AssigneesDropdown />
-                    <SprintsDropdown />
+                    <StateDropdown onChange={setState} />
+                    <PriorityDropdown onChange={setPriority} />
+                    <AssigneesDropdown onChange={setAssignee} />
+                    <SprintsDropdown onChange={setSprint} />
                 </div>
                 <DialogFooter className="flex justify-between">
                     <DialogClose asChild>
@@ -154,7 +227,9 @@ export function CreateIssue({ isOpen, onClose }: CreateIssueProps) {
                             Close
                         </Button>
                     </DialogClose>
-                    <Button className="border-2">Create Issue</Button>
+                    <Button className="border-2" onClick={handleSubmit} disabled={issueStatus === 'loading'}>
+                        {issueStatus === 'loading' ? "Creating..." : "Create Issue"}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
