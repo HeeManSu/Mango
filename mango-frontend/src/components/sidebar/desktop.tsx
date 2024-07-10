@@ -17,7 +17,7 @@ export function SidebarDesktop() {
     return (
         <>
 
-            <aside className='w-[270px] max-w-xs h-screen fixed left-0 top-0 z-40 border-r'>
+            <aside className='w-[270px] max-w-xs h-screen left-0 top-0 z-40 border-r'>
                 <div className='h-full py-4'>
                     <div className="flex px-6 items-center justify-between">
                         <h3 className='cursor-pointer font-[600] font-poppins text-[24px]'>Atlas</h3>
@@ -43,8 +43,8 @@ export function SidebarDesktop() {
                                     Sprints
                                 </Button>
                             </div>
-                            <div className='absolute left-0 bottom-3 w-full px-3'>
-                                <Separator className='absolute -top-3 left-0 w-full' />
+                            <div className=' left-0 bottom-3 w-full px-3'>
+                                <Separator className=' left-0 w-full' />
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button variant='ghost' className='w-full justify-start'>
