@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/redux/store'
-import { fetchSprints } from '@/redux/slices/sprintSlice'
+import { clearError, clearMessage, fetchSprints } from '@/redux/slices/sprintSlice'
 import { UseDialog } from '@/hooks/useDialog'
 import CreateSprint from '../Create Sprint/CreateSprint'
 
@@ -19,13 +19,13 @@ const Sprints: React.FC = () => {
         if (!isMounted.current) {
             const fetchSprintsAsync = async () => {
                 await dispatch(fetchSprints());
+                clearMessage();
+                clearError()
             }
             fetchSprintsAsync();
             isMounted.current = true;
         }
     }, [dispatch]);
-
-    console.log(sprints)
 
     return (
         <>

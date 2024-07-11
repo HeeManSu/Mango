@@ -1,4 +1,4 @@
-import { FetchSprintsPayload, SprintState } from "@/types";
+import { createSprintDataType, createSprintPayloadType, FetchSprintsPayload, SprintState } from "@/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 const server = "http://localhost:8082/api/v1";
@@ -7,7 +7,8 @@ const initialState: SprintState = {
     sprints: [],
     status: 'idle',
     error: null,
-    message: null
+    message: null,
+    sprint: null,
 };
 
 export const fetchSprints = createAsyncThunk('fetchSprints', async () => {
@@ -21,6 +22,19 @@ export const fetchSprints = createAsyncThunk('fetchSprints', async () => {
     }
 });
 
+export const createSprint = createAsyncThunk<createSprintPayloadType, createSprintDataType>('createSprint', async (sprintData) => {
+    try {
+        const { data } = await axios.post(`${server}/sprints/create`, sprintData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return data;
+    } catch (error) {
+        throw new Error('unable to create new sprint')
+    }
+})
+
 const sprintsSlice = createSlice({
     name: 'sprints',
     initialState,
@@ -31,6 +45,9 @@ const sprintsSlice = createSlice({
         clearError(state) {
             state.error = null;
         },
+        clearState() {
+            return initialState;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -45,10 +62,23 @@ const sprintsSlice = createSlice({
             .addCase(fetchSprints.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message || 'Failed to fetch sprints';
-            });
+            })
+            .addCase(createSprint.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(createSprint.fulfilled, (state, action: PayloadAction<createSprintPayloadType>) => {
+                state.status = 'succeeded';
+                state.sprint = action.payload.sprint;
+                state.sprints.unshift(action.payload.sprint)
+                state.message = action.payload.message;
+            })
+            .addCase(createSprint.rejected, (state) => {
+                state.status = 'failed';
+                state.error = 'Failed to create issue';
+            })
     },
 });
 
-export const { clearMessage, clearError } = sprintsSlice.actions;
+export const { clearMessage, clearError, clearState } = sprintsSlice.actions;
 
 export default sprintsSlice.reducer;

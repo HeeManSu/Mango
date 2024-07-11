@@ -8,6 +8,20 @@ export interface Sprint {
   organizationId: number;
 }
 
+export interface createSprintPayloadType {
+  success: boolean;
+  message: string;
+  sprint: Sprint;
+}
+
+export interface createSprintDataType {
+  name: string;
+  description?: string;
+  start_date: Date | null;
+  end_date: Date | null;
+  status: 'ongoing' | 'upcoming' | 'completed';
+}
+
 export interface FetchSprintsPayload {
   sprints: Sprint[];
   message: string;
@@ -18,6 +32,7 @@ export interface SprintState {
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   message: string | null;
+  sprint: Sprint | null;
 }
 
 export interface Issue {

@@ -180,14 +180,10 @@ export function CreateIssue({ isOpen, onClose }: CreateIssueProps) {
         const resultAction = await dispatch(createIssue(issue));
 
         if (createIssue.fulfilled.match(resultAction)) {
-            try {
                 toast({
                     title: "Issue Created",
                     description: "A new issue has been successfully created.",
                 });
-            } catch (error) {
-                console.log(error)
-            }
             onClose();
         } else {
             toast({
