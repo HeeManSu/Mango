@@ -16,7 +16,7 @@ import { isBefore, startOfToday } from 'date-fns'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/redux/store'
 import { createSprintDataType } from '@/types'
-import { clearState, createSprint } from '@/redux/slices/sprintSlice'
+import { clearError, clearMessage, createSprint } from '@/redux/slices/sprintSlice'
 import toast from 'react-hot-toast'
 import useInput from '@/hooks/useInput'
 
@@ -35,30 +35,27 @@ const CreateSprint: React.FC<CreateSprintProps> = ({ isOpen, onClose }) => {
     const today = startOfToday();
     const dispatch = useDispatch<AppDispatch>();
 
-    // const { message, error } = useSelector((state: RootState) => state.sprints);
-
-    // console.log("message: ", message);
-    // console.log("error: ", error)
-
     React.useEffect(() => {
         if (startDate && isBefore(today, startDate)) {
             setStatus('upcoming');
         }
     }, [startDate, today]);
 
-    const calculateDays = (): number | null => {
-        if (startDate && endDate) {
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            const diffInTime = end.getTime() - start.getTime();
-            const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24) + 1);
-            return diffInDays;
-        }
-        return null;
-    };
+    const days = React.useMemo(() => {
+        const calculateDays = (): number | null => {
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffInTime = end.getTime() - start.getTime();
+                const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24) + 1);
+                return diffInDays;
+            }
+            return null;
+        };
+        return calculateDays();
+    }, [startDate, endDate]);
 
-    console.log(calculateDays())
-
+    console.log("days", days);
     const handleClose = (): void => {
         resetName();
         resetDescription();
@@ -79,14 +76,15 @@ const CreateSprint: React.FC<CreateSprintProps> = ({ isOpen, onClose }) => {
         };
         const resultAction = await dispatch(createSprint(sprint));
         if (createSprint.fulfilled.match(resultAction)) {
-            toast.success(resultAction?.payload?.message);
-            dispatch(clearState());
+            toast.success(resultAction.payload.message);
         } else if (createSprint.rejected.match(resultAction)) {
             toast.error('Failed to create Sprint');
         } else {
             toast.error('Unexpected error occurred');
         }
-        onClose();
+        dispatch(clearMessage());
+        dispatch(clearError());
+        handleClose();
     }
 
     return (
