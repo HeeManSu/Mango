@@ -3,15 +3,12 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 const server = "http://localhost:8082/api/v1";
 
-
-
 const initialState: SprintState = {
     sprints: [],
     status: 'idle',
     error: null,
     message: null
 };
-
 
 export const fetchSprints = createAsyncThunk('fetchSprints', async () => {
     try {
@@ -23,7 +20,6 @@ export const fetchSprints = createAsyncThunk('fetchSprints', async () => {
         throw new Error("unable to fetch data");
     }
 });
-
 
 const sprintsSlice = createSlice({
     name: 'sprints',

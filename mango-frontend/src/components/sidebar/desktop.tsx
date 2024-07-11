@@ -11,12 +11,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut, MoreHorizontal, Settings } from 'lucide-react';
 import { CreateIssue } from '../Create Issue/CreateIssue';
 import { UseDialog } from '@/hooks/useDialog';
+import { useNavigate } from 'react-router-dom';
 
 export function SidebarDesktop() {
     const { isOpen, openDialog, closeDialog } = UseDialog();
+    const navigate = useNavigate();
     return (
         <>
-
             <aside className='w-[270px] max-w-xs h-screen left-0 top-0 z-40 border-r'>
                 <div className='h-full py-4'>
                     <div className="flex px-6 items-center justify-between">
@@ -39,7 +40,7 @@ export function SidebarDesktop() {
                                 <Button className="border-2 justify-start">
                                     All issues
                                 </Button>
-                                <Button className="border-2 justify-start">
+                                <Button className="border-2 justify-start" onClick={() => navigate('/sprints')}>
                                     Sprints
                                 </Button>
                             </div>
