@@ -78,6 +78,7 @@ export function SidebarDesktop() {
                     </div>
                 </div>
             </aside>
-            <CreateIssue isOpen={isOpen} onClose={closeDialog} />        </>
+            <CreateIssue isOpen={isOpen} onClose={closeDialog} />
+        </>
     );
 }

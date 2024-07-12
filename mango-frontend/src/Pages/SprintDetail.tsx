@@ -1,8 +1,15 @@
 import React from 'react'
 
+import { Sidebar } from '@/components/sidebar/sidebar';
+import Details from '@/components/SprintDetail/Details';
+
+
 const SprintDetail: React.FC = () => {
     return (
-        <div>SprintDetail</div>
+        <div className='flex'>
+            <Sidebar />
+            <Details />
+        </div>
     )
 }
 

@@ -6,6 +6,7 @@ export interface Sprint {
   end_date: string;
   status: 'ongoing' | 'upcoming' | 'completed';
   organizationId: number;
+  issue: IssueType[];
 }
 
 export interface createSprintPayloadType {
@@ -85,15 +86,6 @@ export interface Organization {
   name: string;
 }
 
-export interface Sprint {
-  sprint_id: number;
-  name: string;
-  description?: string;
-  start_date: string;
-  end_date: string;
-  status: 'ongoing' | 'upcoming' | 'completed';
-  organizationId: number;
-}
 
 export interface IssueType {
   issue_id: number;
