@@ -7,6 +7,7 @@ import { AppDispatch, RootState } from '@/redux/store'
 import { clearError, clearMessage, fetchSprints } from '@/redux/slices/sprintSlice'
 import { UseDialog } from '@/hooks/useDialog'
 import CreateSprint from '../Create Sprint/CreateSprint'
+import SprintList from './SprintList'
 
 const Sprints: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -35,33 +36,21 @@ const Sprints: React.FC = () => {
                     <Button className='border-2' onClick={openDialog}>Add Sprint</Button>
                 </div>
                 <Separator className='mt-[2px]' />
-                <div className='mx-4 mt-3'>
-                    <Tabs defaultValue="ongoing" className="w-[400px]">
-                        <TabsList>
+                <div className=' mt-3'>
+                    <Tabs defaultValue="ongoing">
+                        <TabsList className='mx-4'>
                             <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
                             <TabsTrigger value="completed">Completed</TabsTrigger>
                         </TabsList>
                         <TabsContent value="ongoing">
-                            {sprints.map((sprint, i) => (
-                                <div className='text-black' key={i}>
-                                    {sprint.status === 'ongoing' && sprint.name}
-                                </div>
-                            ))}
+                            <SprintList sprints={sprints.filter(sprint => sprint.status === 'ongoing')} />
                         </TabsContent>
                         <TabsContent value="upcoming">
-                            {sprints.map((sprint, i) => (
-                                <div key={i}>
-                                    {sprint.status === 'upcoming' && sprint.name}
-                                </div>
-                            ))}
+                            <SprintList sprints={sprints.filter(sprint => sprint.status === 'upcoming')} />
                         </TabsContent>
                         <TabsContent value="completed">
-                            {sprints.map((sprint, i) => (
-                                <div key={i}>
-                                    {sprint.status === 'completed' && sprint.name}
-                                </div>
-                            ))}
+                            <SprintList sprints={sprints.filter(sprint => sprint.status === 'completed')} />
                         </TabsContent>
                     </Tabs>
                 </div>

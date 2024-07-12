@@ -34,6 +34,7 @@ const CreateSprint: React.FC<CreateSprintProps> = ({ isOpen, onClose }) => {
     const [status, setStatus] = React.useState<'ongoing' | 'upcoming' | 'completed'>('ongoing');
     const today = startOfToday();
     const dispatch = useDispatch<AppDispatch>();
+    console.log(status);
 
     React.useEffect(() => {
         if (startDate && isBefore(today, startDate)) {
@@ -41,21 +42,6 @@ const CreateSprint: React.FC<CreateSprintProps> = ({ isOpen, onClose }) => {
         }
     }, [startDate, today]);
 
-    const days = React.useMemo(() => {
-        const calculateDays = (): number | null => {
-            if (startDate && endDate) {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                const diffInTime = end.getTime() - start.getTime();
-                const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24) + 1);
-                return diffInDays;
-            }
-            return null;
-        };
-        return calculateDays();
-    }, [startDate, endDate]);
-
-    console.log("days", days);
     const handleClose = (): void => {
         resetName();
         resetDescription();
@@ -66,6 +52,11 @@ const CreateSprint: React.FC<CreateSprintProps> = ({ isOpen, onClose }) => {
 
     const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
+
+        if (!name.trim()) {
+            toast.error('Sprint name is required');
+            return;
+        }
 
         const sprint: createSprintDataType = {
             name,
