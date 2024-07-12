@@ -10,6 +10,12 @@ class SprintRepository {
         return prisma.organization.findFirst();
     }
 
+    async findSprintById(sprint_id: number): Promise<Sprint | null> {
+        return await prisma.sprint.findUnique({
+            where: { sprint_id }
+        });
+    }
+
     async getAllSprints(): Promise<Sprint[]> {
         return await prisma.sprint.findMany({
             include: {
@@ -27,6 +33,14 @@ class SprintRepository {
             include: {
                 issue: true,
             },
+        });
+    }
+
+    async deleteSprint(sprint_id: number, trx?: Prisma.TransactionClient): Promise<Sprint | null> {
+        const client = trx || prisma;
+
+        return await client.sprint.delete({
+            where: { sprint_id }
         });
     }
 

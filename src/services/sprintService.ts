@@ -57,6 +57,18 @@ class SprintService {
 
         return updatedSprint;
     }
+
+    async deleteSprintService(sprint_id: number): Promise<Sprint> {
+        const deletedSprint = await sprintRepository.transaction(async (trx: Prisma.TransactionClient) => {
+            return await sprintRepository.deleteSprint(sprint_id, trx);
+        })
+        return deletedSprint;
+    };
+
+    async checkSprintExist(sprint_id: number): Promise<boolean> {
+        const sprint = await sprintRepository.findSprintById(sprint_id);
+        return sprint !== null;
+    }
 }
 
 export default new SprintService();
