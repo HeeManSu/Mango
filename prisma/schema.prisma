@@ -8,73 +8,78 @@ datasource db {
 }
 
 model Organization {
-  organization_id      Int                   @id @default(autoincrement())
+  organization_id      String                @id @default(uuid())
   name                 String
   customers            Customer[]
+  Issue                Issue[]
   organization_peoples Organization_People[]
-
-  Issue   Issue[]
-  Sprints Sprint[]
+  Sprints              Sprint[]
 
   @@map("organizations")
 }
 
 model Organization_People {
-  team_member_id Int    @id @default(autoincrement())
-  email          String @unique
+  team_member_id String       @id @default(uuid())
+  email          String       @unique
   name           String
-  role           Role   @default(member)
-
-  organizationId Int
+  role           Role         @default(member)
+  organizationId String
+  Issue          Issue[]
   organization   Organization @relation(fields: [organizationId], references: [organization_id])
-
-  Issue Issue[]
 
   @@map("organization_people")
 }
 
-enum Role {
-  admin
-  member
-}
-
 model Customer {
-  customer_id Int    @id @default(autoincrement())
-  name        String
-  phone       Int?   @unique
-  email       String @unique
-
-  organizationId Int
+  customer_id    String       @id @default(uuid())
+  phone          Int?         @unique
+  email          String       @unique
+  organizationId String
+  name           String
   organization   Organization @relation(fields: [organizationId], references: [organization_id])
-
-  issues Issue[]
+  issues         Issue[]
 
   @@map("customers")
 }
 
 model Issue {
-  issue_id    Int       @id @default(autoincrement())
-  title       String
-  description String?
-  state       State?    @default(todo)
-  priority    Priority? @default(low)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  deleted_at  DateTime?
-
-  customerId Int
-  customer   Customer @relation(fields: [customerId], references: [customer_id])
-
-  team_memberId Int
-  team_member   Organization_People @relation(fields: [team_memberId], references: [team_member_id])
-
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [organization_id])
-
-  sprintId Int?
-  sprint   Sprint? @relation(fields: [sprintId], references: [sprint_id])
+  issue_id       String              @id @default(uuid())
+  title          String
+  description    String?
+  state          State?              @default(todo)
+  priority       Priority?           @default(low)
+  created_at     DateTime            @default(now())
+  updated_at     DateTime            @updatedAt
+  deleted_at     DateTime?
+  customerId     String
+  team_memberId  String
+  organizationId String
+  sprintId       String?
+  customer       Customer            @relation(fields: [customerId], references: [customer_id])
+  organization   Organization        @relation(fields: [organizationId], references: [organization_id])
+  sprint         Sprint?             @relation(fields: [sprintId], references: [sprint_id])
+  team_member    Organization_People @relation(fields: [team_memberId], references: [team_member_id])
 
   @@map("issues")
+}
+
+model Sprint {
+  sprint_id      String       @id @default(uuid())
+  name           String
+  description    String?
+  start_date     DateTime
+  end_date       DateTime
+  status         SprintStatus
+  organizationId String
+  issue          Issue[]
+  organization   Organization @relation(fields: [organizationId], references: [organization_id])
+
+  @@map("sprints")
+}
+
+enum Role {
+  admin
+  member
 }
 
 enum State {
@@ -88,21 +93,6 @@ enum Priority {
   high
   low
   medium
-}
-
-model Sprint {
-  sprint_id      Int          @id @default(autoincrement())
-  name           String
-  description    String?
-  start_date     DateTime
-  end_date       DateTime
-  status         SprintStatus
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [organization_id])
-
-  issue Issue[]
-
-  @@map("sprints")
 }
 
 enum SprintStatus {
