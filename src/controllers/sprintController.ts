@@ -11,7 +11,7 @@ export const createSprint = async (req: Request, res: Response, next: NextFuncti
 
         res.status(201).json({
             success: true,
-            message: "New sprint created",
+            message: "New Sprint created",
             sprint: newSprint,
         });
 

@@ -8,6 +8,10 @@ class SprintService {
     async createSprint(sprintData: SprintBodyInput): Promise<Sprint> {
         const { name, description, start_date, end_date, status } = sprintData;
 
+        if (!name.trim()) {
+            throw new ErrorHandlerClass("Sprint name is required", 400);
+        }
+
         const organization = await sprintRepository.findOrganization();
 
         if (!organization) {
