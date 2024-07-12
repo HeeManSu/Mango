@@ -1,12 +1,14 @@
 import type { Sprint } from '@/types'
 import React from 'react'
 import { Separator } from "@/components/ui/separator"
-import { Ellipsis } from 'lucide-react'; import {
+import { Ellipsis } from 'lucide-react';
+import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Link } from 'react-router-dom';
 
 type listPropType = {
     sprints: Sprint[]
@@ -15,7 +17,7 @@ type listPropType = {
 const SprintList: React.FC<listPropType> = ({ sprints }) => {
     console.log(sprints);
     return (
-        <div className='w-full '>
+        <div className='w-full'>
             {sprints.map((sprint, i) => (
                 <div key={i}>
                     <SingleSprint sprint={sprint} />
@@ -55,10 +57,9 @@ const SingleSprint: React.FC<{ sprint: Sprint }> = ({ sprint }) => {
     return (
         <>
             <div className='text-black flex text-[14px] items-center mt-4 h-11 hover:bg-blue-50'>
-
                 <div className='flex w-full items-center justify-between'>
                     <div className='mx-4 pl-1'>
-                        {sprint?.name}
+                        <Link to={`/sprints/${sprint.sprint_id}`}>{sprint?.name}</Link>
                     </div>
                     <div className='flex items-center gap-3 mr-7'>
                         <div className='border rounded-sm px-1 h-fit w-fit bg-[#e9ece5] border-gray-300'>
@@ -79,6 +80,7 @@ const SingleSprint: React.FC<{ sprint: Sprint }> = ({ sprint }) => {
                         </TooltipProvider>
                         <Ellipsis className='h-6 w-8' />
                     </div>
+
 
                 </div>
 
