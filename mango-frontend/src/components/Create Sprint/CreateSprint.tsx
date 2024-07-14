@@ -34,7 +34,6 @@ const CreateSprint: React.FC<CreateSprintProps> = ({ isOpen, onClose }) => {
     const [status, setStatus] = React.useState<'ongoing' | 'upcoming' | 'completed'>('ongoing');
     const today = startOfToday();
     const dispatch = useDispatch<AppDispatch>();
-    console.log(status);
 
     React.useEffect(() => {
         if (startDate && isBefore(today, startDate)) {

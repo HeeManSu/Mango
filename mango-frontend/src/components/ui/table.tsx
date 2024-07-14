@@ -58,7 +58,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors data-[state=selected]:bg-muted",
+      " transition-colors data-[state=selected]:bg-muted",
       className
     )}
     {...props}
@@ -84,12 +84,16 @@ TableHead.displayName = "TableHead"
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
+    className={cn("relative p-0", className)}
     {...props}
-  />
+  >
+    <div className="h-[40px] border-b border-r text-center pt-[9px] hover:border-2 hover:border-black transition-colors duration-150 hover:bg-slate-50">
+      {children}
+    </div>
+  </td>
 ))
 TableCell.displayName = "TableCell"
 

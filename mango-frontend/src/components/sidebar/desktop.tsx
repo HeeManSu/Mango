@@ -26,7 +26,7 @@ export function SidebarDesktop() {
                             <h5 className="text-center text-white pt-1.5">HS</h5>
                         </div>
                     </div>
-                    <Separator className='my-1.5 w-full' />
+                    <Separator className='my-1.5 mt-3 w-full' />
                     <div className="w-auto  mx-4 mt-3">
                         <Button onClick={openDialog} className="w-full items-center justify-start border-2">
                             <img className="pr-2" src={Add} />

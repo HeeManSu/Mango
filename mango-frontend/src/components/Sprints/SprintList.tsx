@@ -15,7 +15,6 @@ type listPropType = {
 }
 
 const SprintList: React.FC<listPropType> = ({ sprints }) => {
-    console.log(sprints);
     return (
         <div className='w-full'>
             {sprints.map((sprint, i) => (

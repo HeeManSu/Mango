@@ -104,7 +104,7 @@ const issuesSlice = createSlice({
             .addCase(createIssue.fulfilled, (state, action: PayloadAction<IssuePayload>) => {
                 state.status = 'succeeded';
                 state.issue = action.payload.issue;
-                state.issues.unshift(action.payload.issue)
+                state.issues.push(action.payload.issue)
                 state.message = action.payload.message;
             })
             .addCase(createIssue.rejected, (state, action: PayloadAction<string | undefined>) => {

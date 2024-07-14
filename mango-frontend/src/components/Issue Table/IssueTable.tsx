@@ -32,15 +32,15 @@ export function IssueTable<TData, TValue>({
     });
 
     return (
-        <div className="mt-[100px] w-full">
-            <div className="rounded-md border">
+        <div className="mt-[8px] w-full">
+            <div className=" ">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead className="border-r hover:bg-red-400" key={header.id}>
+                                        <TableHead className="border-r border-t hover:bg-slate-50" key={header.id}>
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -61,7 +61,7 @@ export function IssueTable<TData, TValue>({
                                     data-state={row.getIsSelected() && "selected"}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell className="border-red-500 border hover:to-blue-900" key={cell.id}>
+                                        <TableCell className="" key={cell.id}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
