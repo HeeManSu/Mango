@@ -20,7 +20,12 @@ class SprintRepository {
         return await prisma.sprint.findMany({
             include: {
                 organization: true,
-                issue: true
+                issue: {
+                    include: {
+                        team_member: true,
+                        organization: true,
+                    }
+                }
             },
         });
     }
