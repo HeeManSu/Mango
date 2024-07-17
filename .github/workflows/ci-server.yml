@@ -1,6 +1,7 @@
 name: Server CI pipeline
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master

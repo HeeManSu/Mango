@@ -1,6 +1,7 @@
 name: Frontend CI pipeline
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
